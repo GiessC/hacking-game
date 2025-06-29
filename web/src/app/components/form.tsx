@@ -1,0 +1,65 @@
+import {
+  FormProvider,
+  useForm,
+  type FieldValues,
+  type SubmitHandler,
+  type UseFormProps,
+} from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+interface FormProps<
+  TSchema extends Zod3Type<TFormOutput, TFormInput>,
+  TFormInput extends FieldValues = FieldValues,
+  TContext = unknown,
+  TFormOutput extends FieldValues = TFormInput
+> extends Pick<
+    UseFormProps<TFormInput, TContext, TFormOutput>,
+    'defaultValues'
+  > {
+  schema: TSchema;
+  onSubmit: SubmitHandler<TFormOutput>;
+  options?: Omit<
+    UseFormProps<TFormInput, TContext, TFormOutput>,
+    'onSubmit' | 'resolver' | 'mode' | 'reValidateMode' | 'defaultValues'
+  >;
+  children: (
+    form: ReturnType<typeof useForm<TFormInput, TContext, TFormOutput>>
+  ) => React.ReactNode;
+}
+
+export function Form<
+  TSchema extends Zod3Type<TFormOutput, TFormInput>,
+  TFormInput extends FieldValues = FieldValues,
+  TContext = unknown,
+  TFormOutput extends FieldValues = TFormInput
+>({
+  schema,
+  onSubmit,
+  defaultValues,
+  children,
+  options = {},
+}: FormProps<TSchema, TFormInput, TContext, TFormOutput>) {
+  const form = useForm({
+    mode: 'all',
+    reValidateMode: 'onChange',
+    defaultValues,
+    resolver: zodResolver(schema),
+    ...options,
+  });
+  const { handleSubmit } = form;
+
+  return (
+    <FormProvider {...form}>
+      <form onSubmit={handleSubmit(onSubmit)}>{children(form)}</form>
+    </FormProvider>
+  );
+}
+
+// Internal types from zod resolver
+interface Zod3Type<O = unknown, I = unknown> {
+  _output: O;
+  _input: I;
+  _def: {
+    typeName: string;
+  };
+}
