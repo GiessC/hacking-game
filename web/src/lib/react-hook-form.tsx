@@ -5,6 +5,6 @@ export function useForm<
   TFormInput extends FieldValues = FieldValues,
   TContext = unknown,
   TFormOutput extends FieldValues = FieldValues
->(props: UseFormProps<TFormInput, TContext, TFormOutput>) {
+>(props?: UseFormProps<TFormInput, TContext, TFormOutput>) {
   return useRhfForm<TFormInput, TContext, TFormOutput>(props);
 }
