@@ -1,0 +1,24 @@
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { CreateLobbyForm } from './create-lobby-form';
+
+export function CreateLobbyCard({ className }: { className?: string }) {
+  return (
+    <Card className={className}>
+      <CardHeader>
+        <CardTitle>Create Lobby</CardTitle>
+        <CardDescription>
+          Create a new lobby to start playing with friends.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <CreateLobbyForm />
+      </CardContent>
+    </Card>
+  );
+}
