@@ -9,7 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { z, ZodTypeAny } from 'zod';
 
 interface FormProps<
-  TSchema extends Zod3Type<TFormOutput, TFormInput>,
+  TSchema extends ZodTypeAny,
   TFormInput extends FieldValues = FieldValues,
   TContext = unknown,
   TFormOutput extends FieldValues = TFormInput
@@ -29,7 +29,7 @@ interface FormProps<
 }
 
 export function Form<
-  TSchema extends ZodTypeAny & Zod3Type<TFormOutput, TFormInput>,
+  TSchema extends ZodTypeAny,
   TFormInput extends FieldValues = z.input<TSchema>,
   TContext = unknown,
   TFormOutput extends FieldValues = z.output<TSchema>
@@ -54,13 +54,4 @@ export function Form<
       <form onSubmit={handleSubmit(onSubmit)}>{children(form)}</form>
     </FormProvider>
   );
-}
-
-// Internal types from zod resolver
-interface Zod3Type<O = unknown, I = unknown> {
-  _output: O;
-  _input: I;
-  _def: {
-    typeName: string;
-  };
 }
