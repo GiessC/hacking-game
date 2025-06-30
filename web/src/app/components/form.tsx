@@ -6,6 +6,7 @@ import {
   type UseFormProps,
 } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import type { z, ZodTypeAny } from 'zod';
 
 interface FormProps<
   TSchema extends Zod3Type<TFormOutput, TFormInput>,
@@ -28,10 +29,10 @@ interface FormProps<
 }
 
 export function Form<
-  TSchema extends Zod3Type<TFormOutput, TFormInput>,
-  TFormInput extends FieldValues = FieldValues,
+  TSchema extends ZodTypeAny & Zod3Type<TFormOutput, TFormInput>,
+  TFormInput extends FieldValues = z.input<TSchema>,
   TContext = unknown,
-  TFormOutput extends FieldValues = TFormInput
+  TFormOutput extends FieldValues = z.output<TSchema>
 >({
   schema,
   onSubmit,
