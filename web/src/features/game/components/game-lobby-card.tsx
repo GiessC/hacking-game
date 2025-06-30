@@ -11,20 +11,30 @@ import {
 } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router';
+import { useCurrentUser } from '@/hooks/use-current-user';
+import type { Game } from '../types/game';
 import { useStartGame } from '../api/game-api';
 
 interface GameLobbyProps {
   className?: string;
-  code: string;
+  game: Game;
 }
 
-export function GameLobbyCard({ className, code }: GameLobbyProps) {
+export function GameLobbyCard({ className, game }: GameLobbyProps) {
   const navigate = useNavigate();
   const { mutateAsync: startGameAsync } = useStartGame();
+  const { userId } = useCurrentUser();
 
   async function startGame() {
-    const game = await startGameAsync(code);
-    navigate(`/game/${game.id}`);
+    try {
+      const startedGame = await startGameAsync(game.id);
+      navigate(`/game/${startedGame.id}`);
+    } catch (error) {
+      console.error('Error starting game:', error);
+      // Handle error appropriately, e.g., show a notification or alert
+      // For now, we just log it to the console
+      alert('Failed to start the game. Please try again later.');
+    }
   }
 
   return (
@@ -44,12 +54,19 @@ export function GameLobbyCard({ className, code }: GameLobbyProps) {
         </Typography>
       </CardDescription>
       <CardContent>
-        <Typography variant='p'>{formatCode(code)}</Typography>
+        <Typography
+          variant='h3'
+          className='text-2xl font-bold mb-4'
+        >
+          Join Code: {formatCode(game.joinCode)}
+        </Typography>
       </CardContent>
       <CardFooter>
-        <CardAction className='flex w-full justify-center'>
-          <Button onClick={startGame}>Start Game</Button>
-        </CardAction>
+        {game.ownerId === userId && (
+          <CardAction className='flex w-full justify-center'>
+            <Button onClick={startGame}>Start Game</Button>
+          </CardAction>
+        )}
       </CardFooter>
     </Card>
   );
@@ -57,6 +74,7 @@ export function GameLobbyCard({ className, code }: GameLobbyProps) {
 
 function formatCode(code: string) {
   return code
+    .toUpperCase()
     .replace(/(.{3})/g, '$1-')
     .trim()
     .slice(0, -1);

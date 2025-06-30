@@ -1,10 +1,14 @@
+import { playerSchema } from '@/types/player';
 import { teamSchema, type Team } from '@/types/team';
 import z from 'zod';
 
 export const gameBaseSchema = z.object({
   id: z.string().uuid(),
-  code: z.string(),
-  teams: z.array(teamSchema).min(2, 'At least two teams are required.'),
+  joinCode: z.string(),
+  teams: z.array(teamSchema),
+  ownerId: z.string().uuid(),
+  playersInLobby: z.array(playerSchema).optional(),
+  started: z.boolean().default(false),
 });
 
 export const gameSchema = gameBaseSchema.superRefine(superRefineGame);

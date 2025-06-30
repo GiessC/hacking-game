@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 
 import api from './api';
+import 'reflect-metadata';
 
 require('dotenv').config();
 

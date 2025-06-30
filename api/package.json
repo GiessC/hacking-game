@@ -6,6 +6,7 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "dev": "nodemon src/index.ts",
+    "debug": "nodemon --watch src --exec \"node --inspect=9229 -r ts-node/register\" src/index.ts",
     "build": "tsc",
     "start:dist": "node dist/src/index.js",
     "lint": "eslint --fix src test",
@@ -25,6 +26,10 @@
     "express": "^4.21.1",
     "helmet": "^8.0.0",
     "morgan": "^1.10.0",
+    "reflect-metadata": "^0.2.2",
+    "sqlite3": "^5.1.7",
+    "typeorm": "^0.3.25",
+    "uuid": "^11.1.0",
     "zod": "^3.24.4"
   },
   "devDependencies": {
@@ -32,8 +37,9 @@
     "@types/express": "^4.17.20",
     "@types/jest": "^29.5.13",
     "@types/morgan": "^1.9.9",
-    "@types/node": "^22.7.5",
+    "@types/node": "^22.15.34",
     "@types/supertest": "^6.0.2",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^7.16.1",
     "@typescript-eslint/parser": "^7.16.1",
     "eslint": "^8.57.0",

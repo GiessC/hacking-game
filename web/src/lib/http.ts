@@ -1,22 +1,22 @@
 interface IHttp {
   get: <TResponse, TData = undefined>(
     url: string,
-    data: TData,
+    data?: TData,
     headers?: Record<string, string>
   ) => Promise<TResponse>;
   post: <TResponse, TData = undefined>(
     url: string,
-    data: TData,
+    data?: TData,
     headers?: Record<string, string>
   ) => Promise<TResponse>;
   put: <TResponse, TData = undefined>(
     url: string,
-    data: TData,
+    data?: TData,
     headers?: Record<string, string>
   ) => Promise<TResponse>;
   patch: <TResponse, TData = undefined>(
     url: string,
-    data: TData,
+    data?: TData,
     headers?: Record<string, string>
   ) => Promise<TResponse>;
   delete: <TResponse>(url: string) => Promise<TResponse>;
@@ -32,6 +32,9 @@ class Http implements IHttp {
       method: 'GET',
       headers: overrideHeaders(headers),
     });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     return await response.json();
   }
 
@@ -45,6 +48,9 @@ class Http implements IHttp {
       headers: overrideHeaders(headers),
       body: data ? JSON.stringify(data) : undefined,
     });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     return await response.json();
   }
 
@@ -58,6 +64,9 @@ class Http implements IHttp {
       headers: overrideHeaders(headers),
       body: data ? JSON.stringify(data) : undefined,
     });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     return await response.json();
   }
 
@@ -71,6 +80,9 @@ class Http implements IHttp {
       headers: overrideHeaders(headers),
       body: data ? JSON.stringify(data) : undefined,
     });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     return await response.json();
   }
 
@@ -82,6 +94,9 @@ class Http implements IHttp {
       method: 'DELETE',
       headers: overrideHeaders(headers),
     });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     return await response.json();
   }
 }
