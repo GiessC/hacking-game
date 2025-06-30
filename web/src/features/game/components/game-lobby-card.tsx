@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import type { Game } from '../types/game';
-import { useStartGame } from '../api/game-api';
+import { useLeaveGame, useStartGame } from '../api/game-api';
 import { Separator } from '@/components/ui/separator';
 import { AsyncPlayerList } from './async-player-list';
 import {
@@ -30,6 +30,7 @@ interface GameLobbyProps {
 export function GameLobbyCard({ className, game }: GameLobbyProps) {
   const navigate = useNavigate();
   const { mutateAsync: startGameAsync } = useStartGame();
+  const { mutateAsync: leaveGameAsync } = useLeaveGame();
   const { userId } = useCurrentUser();
 
   async function startGame() {
@@ -38,9 +39,18 @@ export function GameLobbyCard({ className, game }: GameLobbyProps) {
       navigate(`/game/${startedGame.id}`);
     } catch (error) {
       console.error('Error starting game:', error);
-      // Handle error appropriately, e.g., show a notification or alert
-      // For now, we just log it to the console
       alert('Failed to start the game. Please try again later.');
+    }
+  }
+
+  async function leaveGame() {
+    try {
+      await leaveGameAsync(game.id);
+      console.log('Left game successfully');
+      navigate('/');
+    } catch (error) {
+      console.error('Error leaving game:', error);
+      alert('Failed to leave the game. Please try again later.');
     }
   }
 
@@ -75,7 +85,7 @@ export function GameLobbyCard({ className, game }: GameLobbyProps) {
         <AsyncPlayerList gameId={game.id} />
       </CardContent>
       <CardFooter>
-        {game.ownerId === userId && (
+        {game.ownerId === userId ? (
           <CardAction className='flex w-full justify-center'>
             <Tooltip disableHoverableContent={!notEnoughPlayers}>
               <TooltipTrigger asChild>
@@ -93,6 +103,10 @@ export function GameLobbyCard({ className, game }: GameLobbyProps) {
                 game.
               </TooltipContent>
             </Tooltip>
+          </CardAction>
+        ) : (
+          <CardAction className='flex w-full justify-center'>
+            <Button onClick={leaveGame}>Leave Game</Button>
           </CardAction>
         )}
       </CardFooter>

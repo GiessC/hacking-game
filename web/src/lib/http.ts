@@ -32,7 +32,7 @@ class Http implements IHttp {
       method: 'GET',
       headers: overrideHeaders(headers),
     });
-    if (!response.ok) {
+    if (isFailure(response)) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return await response.json();
@@ -48,7 +48,7 @@ class Http implements IHttp {
       headers: overrideHeaders(headers),
       body: data ? JSON.stringify(data) : undefined,
     });
-    if (!response.ok) {
+    if (isFailure(response)) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return await response.json();
@@ -64,7 +64,7 @@ class Http implements IHttp {
       headers: overrideHeaders(headers),
       body: data ? JSON.stringify(data) : undefined,
     });
-    if (!response.ok) {
+    if (isFailure(response)) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return await response.json();
@@ -80,7 +80,7 @@ class Http implements IHttp {
       headers: overrideHeaders(headers),
       body: data ? JSON.stringify(data) : undefined,
     });
-    if (!response.ok) {
+    if (isFailure(response)) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return await response.json();
@@ -94,11 +94,15 @@ class Http implements IHttp {
       method: 'DELETE',
       headers: overrideHeaders(headers),
     });
-    if (!response.ok) {
+    if (isFailure(response)) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return await response.json();
   }
+}
+
+function isFailure(response: Response): boolean {
+  return response.status < 200 || response.status >= 400;
 }
 
 function withParams<TData>(url: string, data?: TData): string {

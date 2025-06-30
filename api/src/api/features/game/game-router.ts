@@ -91,6 +91,28 @@ gameRouter.post('/:code/join', async (req: Request, res: Response) => {
   });
 });
 
+gameRouter.post('/:id/leave', async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { playerId } = req.body;
+  const game = await gameRepository.findOneBy({ id });
+  if (!game) {
+    return res.status(404).json({ error: 'Game not found.' });
+  }
+  if (game.ownerId === req.body.playerId) {
+    await gameRepository.remove(game);
+    return res.status(200).json({ message: 'Game deleted successfully.' });
+  }
+  const player = await playerRepository.findOneBy({
+    id: playerId,
+    gameId: game.id,
+  });
+  if (!player) {
+    return res.status(404).json({ error: 'Player not found in this game.' });
+  }
+  await playerRepository.remove(player);
+  res.status(200).json({ message: 'Player left the game successfully.' });
+});
+
 gameRouter.get('/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
   const game = await gameRepository.findOneBy({ id });

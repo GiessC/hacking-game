@@ -4,6 +4,7 @@ import z from 'zod';
 import { type Game } from '../types/game';
 import { http } from '@/lib/http';
 import { LocalStorage } from '@/lib/local-storage';
+import { useCurrentUser } from '@/hooks/use-current-user';
 
 export function useGame(gameId: string, options?: UseQueryOptions<Game>) {
   return useQuery({
@@ -28,6 +29,23 @@ export function useStartGame() {
     mutationKey: ['create-lobby'],
     mutationFn: async (gameId: string): Promise<Game> => {
       return await http.post<Game>(apiUrl(`/api/v1/game/${gameId}/start`));
+    },
+  });
+}
+
+export function useLeaveGame() {
+  const { userId } = useCurrentUser();
+  return useMutation({
+    mutationKey: ['leave-game'],
+    mutationFn: async (gameId: string): Promise<void> => {
+      return await http.post<
+        void,
+        {
+          playerId: string;
+        }
+      >(apiUrl(`/api/v1/game/${gameId}/leave`), {
+        playerId: userId,
+      });
     },
   });
 }
