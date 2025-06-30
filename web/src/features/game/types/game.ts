@@ -5,6 +5,7 @@ import z from 'zod';
 export const gameBaseSchema = z.object({
   id: z.string().uuid(),
   joinCode: z.string(),
+  numberOfTeams: z.number().min(2, 'At least 2 teams are required.'),
   teams: z.array(teamSchema),
   ownerId: z.string().uuid(),
   playersInLobby: z.array(playerSchema).optional(),

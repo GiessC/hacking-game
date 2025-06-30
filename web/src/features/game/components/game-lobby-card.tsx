@@ -14,6 +14,13 @@ import { useNavigate } from 'react-router';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import type { Game } from '../types/game';
 import { useStartGame } from '../api/game-api';
+import { Separator } from '@/components/ui/separator';
+import { AsyncPlayerList } from './async-player-list';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface GameLobbyProps {
   className?: string;
@@ -36,6 +43,10 @@ export function GameLobbyCard({ className, game }: GameLobbyProps) {
       alert('Failed to start the game. Please try again later.');
     }
   }
+
+  const notEnoughPlayers =
+    !game.playersInLobby?.length ||
+    game.playersInLobby.length < game.numberOfTeams;
 
   return (
     <Card className={cn('p-8 !gap-2 text-center', className)}>
@@ -60,11 +71,28 @@ export function GameLobbyCard({ className, game }: GameLobbyProps) {
         >
           Join Code: {formatCode(game.joinCode)}
         </Typography>
+        <Separator />
+        <AsyncPlayerList gameId={game.id} />
       </CardContent>
       <CardFooter>
         {game.ownerId === userId && (
           <CardAction className='flex w-full justify-center'>
-            <Button onClick={startGame}>Start Game</Button>
+            <Tooltip disableHoverableContent={!notEnoughPlayers}>
+              <TooltipTrigger asChild>
+                <span>
+                  <Button
+                    onClick={startGame}
+                    disabled={notEnoughPlayers}
+                  >
+                    Start Game
+                  </Button>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side='bottom'>
+                At least {game.numberOfTeams} players are required to start the
+                game.
+              </TooltipContent>
+            </Tooltip>
           </CardAction>
         )}
       </CardFooter>

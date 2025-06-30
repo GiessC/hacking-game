@@ -16,6 +16,9 @@ export class GameEntity {
   @Column()
   public ownerId!: string;
 
+  @Column()
+  public numberOfTeams!: number;
+
   @OneToMany(() => TeamEntity, (team) => team.game, {
     eager: true,
     cascade: true,

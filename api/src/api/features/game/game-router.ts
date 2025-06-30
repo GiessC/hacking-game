@@ -27,6 +27,7 @@ gameRouter.post('/', async (req: Request, res: Response) => {
     id: v4(),
     joinCode: generateJoinCode(),
     teams: new Array(numberOfTeams),
+    numberOfTeams,
     playersInLobby: [],
   });
 

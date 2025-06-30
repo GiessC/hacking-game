@@ -7,7 +7,10 @@ export const teamBaseSchema = z.object({
   players: z.array(playerSchema).min(1, 'At least one player is required.'),
 });
 
-export const teamSchema = teamBaseSchema.superRefine(superRefineTeam);
+export type Team = z.infer<typeof teamBaseSchema>;
+
+export const teamSchema: z.ZodType<Team> =
+  teamBaseSchema.superRefine(superRefineTeam);
 
 export function superRefineTeam(
   team: z.infer<typeof teamBaseSchema>,
@@ -22,8 +25,6 @@ export function superRefineTeam(
     });
   }
 }
-
-export type Team = z.infer<typeof teamSchema>;
 
 function findDuplicatePlayerNames(players: Player[]): number[] {
   const indexMap: { [playerName: string]: number[] } = {};
