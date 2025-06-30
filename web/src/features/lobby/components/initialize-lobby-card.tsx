@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/card';
 import { InitializeLobbyForm } from './initialize-lobby-form';
 
-export function CreateLobbyCard({ className }: { className?: string }) {
+export function InitializeLobbyCard({ className }: { className?: string }) {
   return (
     <Card className={className}>
       <CardHeader>
