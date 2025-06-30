@@ -1,16 +1,18 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 import z from 'zod';
 import { type Game } from '../types/game';
 import { http } from '@/lib/http';
 import { LocalStorage } from '@/lib/local-storage';
 
-export function useGame(gameId: string) {
+export function useGame(gameId: string, options?: UseQueryOptions<Game>) {
   return useQuery({
+    ...options,
     queryKey: ['game', gameId],
     queryFn: async (): Promise<Game> => {
       return await http.get<Game>(apiUrl(`/api/v1/game/${gameId}`));
     },
+    refetchInterval: 10_000,
   });
 }
 
