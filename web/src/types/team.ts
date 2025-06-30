@@ -7,9 +7,9 @@ export const teamBaseSchema = z.object({
   players: z.array(playerSchema).min(1, 'At least one player is required.'),
 });
 
-export const teamSchema = teamBaseSchema.superRefine(superRefineLobbyTeam);
+export const teamSchema = teamBaseSchema.superRefine(superRefineTeam);
 
-export function superRefineLobbyTeam(
+export function superRefineTeam(
   team: z.infer<typeof teamBaseSchema>,
   context: z.RefinementCtx
 ) {

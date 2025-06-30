@@ -1,118 +1,91 @@
 import { Form } from '@/app/components/form';
 import { Button } from '@/components/ui/button';
 import {
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useFieldArray, type UseFormReturn } from 'react-hook-form';
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Trash } from 'lucide-react';
-import { TeamPlayersDialogTrigger } from './team-players-dialog';
-import { useNavigate } from 'react-router';
 import {
   startGameSchema,
-  useStartGame,
+  useNewGame,
   type StartGameRequest,
 } from '../api/game-api';
+import Typography from '@/app/components/typography';
+import { useNavigate } from 'react-router';
 
 export function StartGameForm() {
-  const { mutateAsync: startGameAsync } = useStartGame();
+  const { mutateAsync: createGameAsync, data } = useNewGame();
   const navigate = useNavigate();
 
   async function handleSubmit(data: StartGameRequest) {
-    const game = await startGameAsync(data);
-    console.log('Game started:', game);
-    navigate(`/game/${game.id}`);
+    try {
+      const game = await createGameAsync(data);
+      navigate(`/game/${game.code}/lobby`);
+    } catch (error) {
+      console.error('Error creating lobby:', error);
+    }
   }
 
   return (
-    <Form<typeof startGameSchema, StartGameRequest, unknown, StartGameRequest>
+    <Form
       schema={startGameSchema}
       defaultValues={{
-        teams: new Array(2).fill({ name: '', players: [] }),
+        numberOfTeams: 2,
       }}
       onSubmit={handleSubmit}
     >
-      {(form) => <StartGameFormFields {...form} />}
+      {({ control }) => (
+        <div className={'flex flex-col gap-4'}>
+          <FormField
+            control={control}
+            name='numberOfTeams'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Number of Teams</FormLabel>
+                <FormControl>
+                  <Input
+                    inputMode='numeric'
+                    {...field}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      if (isNaN(Number(value))) {
+                        return;
+                      }
+                      const numberValue = Number(value);
+                      field.onChange(numberValue);
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {data ? (
+            <div className='flex flex-row items-center gap-2'>
+              <Typography variant='h3'>
+                Invite code: {formatCode(data.code)}
+              </Typography>
+            </div>
+          ) : (
+            <Button type='submit'>Create Lobby</Button>
+          )}
+          {data && (
+            <Button onClick={() => navigate(`/game/${data.id}`)}>
+              Start Game
+            </Button>
+          )}
+        </div>
+      )}
     </Form>
   );
 }
 
-function StartGameFormFields({ control }: UseFormReturn<StartGameRequest>) {
-  const { fields: teams, remove: removeTeam } = useFieldArray({
-    name: 'teams',
-    control,
-  });
-
-  return (
-    <div className='flex flex-col gap-4'>
-      <div className={'gap-4 grid md:grid-cols-2'}>
-        {teams.map((field, teamIndex) => (
-          <Card key={`team-${field.id}`}>
-            <CardHeader className='flex items-center justify-between'>
-              <CardTitle>Team {teamIndex + 1}</CardTitle>
-              <CardAction>
-                <Button
-                  variant='outline'
-                  size='icon'
-                  className='cursor-pointer border-red-600 hover:border-red-500'
-                  onClick={() => removeTeam(teamIndex)}
-                >
-                  <Trash className='text-red-500' />
-                </Button>
-              </CardAction>
-            </CardHeader>
-            <CardContent className='grid gap-4'>
-              <FormField
-                control={control}
-                name={`teams.${teamIndex}.name`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Team Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder='Ex. LeBron is the 🐐'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={control}
-                name={`teams.${teamIndex}.players`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Players</FormLabel>
-                    <FormControl>
-                      <TeamPlayersDialogTrigger
-                        teamIndex={teamIndex}
-                        players={field.value}
-                        onChange={(players) => {
-                          field.onChange(players);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-      <Button type='submit'>Create Lobby</Button>
-    </div>
-  );
+function formatCode(code: string) {
+  return code
+    .replace(/(.{3})/g, '$1-')
+    .trim()
+    .slice(0, -1);
 }

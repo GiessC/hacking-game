@@ -1,20 +1,21 @@
 import {
   Card,
+  CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
 } from '@/components/ui/card';
 import { StartGameForm } from './start-game-form';
-import { cn } from '@/lib/utils';
 
 export function StartGameCard({ className }: { className?: string }) {
   return (
-    <Card className={cn('w-full', className)}>
+    <Card className={className}>
       <CardHeader>
-        <CardTitle>Create Lobby</CardTitle>
+        <CardTitle>Start Game</CardTitle>
         <CardDescription>
-          Create a new lobby to start playing with friends.
+          Create a new game lobby by specifying the number of teams. A code will
+          be generated for the lobby, which can be shared with other players to
+          join the game.
         </CardDescription>
       </CardHeader>
       <CardContent>

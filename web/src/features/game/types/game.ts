@@ -3,6 +3,7 @@ import z from 'zod';
 
 export const gameBaseSchema = z.object({
   id: z.string().uuid(),
+  code: z.string(),
   teams: z.array(teamSchema).min(2, 'At least two teams are required.'),
 });
 
