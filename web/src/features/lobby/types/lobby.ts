@@ -1,5 +1,4 @@
 import z from 'zod';
-import { v4 as uuidv4 } from 'uuid';
 
 export const lobbyPlayerSchema = z.object({
   name: z.string().min(1, 'Player name is required.'),
@@ -33,7 +32,7 @@ export type LobbyTeam = z.infer<typeof lobbyTeamSchema>;
 
 export const lobbySchema = z
   .object({
-    id: z.string().uuid().default(uuidv4()),
+    id: z.string().uuid(),
     teams: z.array(lobbyTeamSchema).min(2, 'At least two teams are required.'),
   })
   .superRefine((lobby, context) => {

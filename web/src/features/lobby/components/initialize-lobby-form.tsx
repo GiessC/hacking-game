@@ -8,19 +8,25 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  createLobbySchema,
-  useCreateLobby,
-  type CreateLobbyRequest,
-} from '../api/lobby-api';
 import { Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router';
+import { z } from 'zod';
 
-export function CreateLobbyForm() {
-  const { mutateAsync: createLobbyAsync, isPending } = useCreateLobby();
+const initializeLobbySchema = z.object({
+  numberOfTeams: z.number().min(2, 'At least two teams are required.'),
+});
 
-  async function handleSubmit(data: CreateLobbyRequest) {
+type InitializeLobbyFormValues = z.infer<typeof initializeLobbySchema>;
+
+export function InitializeLobbyForm() {
+  const navigate = useNavigate();
+
+  async function handleSubmit(data: InitializeLobbyFormValues) {
     try {
-      await createLobbyAsync(data);
+      navigate({
+        pathname: '/lobby/new',
+        search: `?teams=${data.numberOfTeams}`,
+      });
     } catch (error) {
       console.error('Error creating lobby:', error);
     }
@@ -28,7 +34,7 @@ export function CreateLobbyForm() {
 
   return (
     <Form
-      schema={createLobbySchema}
+      schema={initializeLobbySchema}
       defaultValues={{
         numberOfTeams: 2,
       }}
@@ -60,11 +66,7 @@ export function CreateLobbyForm() {
               </FormItem>
             )}
           />
-          {isPending ? (
-            <LoadingButton />
-          ) : (
-            <Button type='submit'>Create Lobby</Button>
-          )}
+          <Button type='submit'>Create Lobby</Button>
         </div>
       )}
     </Form>

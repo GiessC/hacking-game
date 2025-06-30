@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { CreateLobbyForm } from './create-lobby-form';
+import { InitializeLobbyForm } from './initialize-lobby-form';
 
 export function CreateLobbyCard({ className }: { className?: string }) {
   return (
@@ -17,7 +17,7 @@ export function CreateLobbyCard({ className }: { className?: string }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <CreateLobbyForm />
+        <InitializeLobbyForm />
       </CardContent>
     </Card>
   );
